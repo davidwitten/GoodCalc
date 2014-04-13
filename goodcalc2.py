@@ -4,7 +4,7 @@ from math import *
 import operator
 ID = {'trig':0}#0 = radians, 1 = degrees
 def string(x):
-    
+    print()
 def evaluate(string, ID, answer):
     while string.count('/') != 0:
         if string.count('(') != 0:
