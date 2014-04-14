@@ -14,13 +14,20 @@ def string(x, ID, answer):
                 EL.append(j)
         for i1, n1 in enumerate(OL):
             if n1 != OL[-1]:
+                fork = 0
                 for i2, n2 in enumerate(EL):
                     if n2 in range(n1, OL[i1 + 1]):
                         newt = x[n1:n2 + 1]
                         Enewt = newt.replace('(','').replace(')','')
                         z = main(Enewt, ID, answer)
                         x = x.replace(newt,str(z))
+                        fork += 1
                         break
+                if fork == 0:
+                    newt = x[x.rfind('('):x.find(')') + 1]
+                    Enewt = newt.replace('(','').replace(')','')
+                    z = main(Enewt,ID, answer)
+                    x = x.replace(newt, str(z))
                 break
 
             else:
@@ -79,8 +86,11 @@ def main(TI,ID,answer):#The Input, Initial Data
     thein = TI[1:]
     thein = thein.split()
     ID = ID
-    if '/' in TI:
-        thein[1:] = [eval(i) for i in thein[1:]]
+    try:
+        if '/' in TI:
+            thein[1:] = [eval(i) for i in thein[1:]]
+    except:
+        ANSWER = "ERROR"
     try:
         origin = thein[0].lower()
     except IndexError:
