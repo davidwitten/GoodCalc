@@ -5,6 +5,7 @@ A better version of my old calculator; it has many more functions, and is more a
 
 Functions
 ---------
+Here are three of many of the functions available on GoodPyCalc.
 
     /choose x y
 
