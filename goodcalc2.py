@@ -16,9 +16,9 @@ def string(x, ID, answer):
                 Ei = i
                 break
         newt = x[Oi: Ei + 1]
-        z = main(TO(newt),0,0)
+        z = main(TO(newt),ID,answer)
         x = x.replace(newt,str(z))
-    return main(x,0,0)
+    return main(x,ID,answer)
                     
 def factors(number):
     factor = []
@@ -28,7 +28,7 @@ def factors(number):
     return factor
 def Help():
     thedict = {'/settings':'Change Settings','/prime x':'Returns 1 if prime, 0 otherwise','/primerange x y':'Returns a list of primes from x to y','/factor x':'Returns the factors of x','/sumlist x y z ...':'Returns sum of list',\
-               '/choose x y ':'Returns the value of xCy'}
+               '/choose x y ':'Returns the value of xCy','/comment abcde':'Returns the comment'}
     items = sorted(thedict.keys())
     print('%-20s%-30s'%('Function', 'Use\n'))
     for i in items:    
@@ -78,15 +78,10 @@ def main(TI,ID,answer):#The Input, Initial Data
     except IndexError:
         pass
     try:
-        if origin == 'prime':
-            a = prime(int(thein[1]))
-            ANSWER = a
+        if origin == 'choose':
+            ANSWER = (factorial(thein[1]))//(factorial(thein[1] - thein[2]) * factorial(thein[2]))
         elif origin == 'factor' or origin == 'factors':
             ANSWER = factors(thein[1])
-        elif origin == 'primerange':
-            ANSWER = primerange(thein[1],thein[2])
-        elif origin == 'choose':
-            ANSWER = (factorial(thein[1]))//(factorial(thein[1] - thein[2]) * factorial(thein[2]))
         elif origin == 'comment':
             ANSWER = TI[9:]
         elif origin == 'sqrt':
@@ -101,6 +96,11 @@ def main(TI,ID,answer):#The Input, Initial Data
         elif origin == 'grade':
             ANSWER = ((thein[1] * 60) + (thein[2] * 30) + (thein[3] * 10))/100
             #grade: formative, summative, hw
+        elif origin == 'prime':
+            a = prime(int(thein[1]))
+            ANSWER = a
+        elif origin == 'primerange':
+            ANSWER = primerange(thein[1],thein[2])
         elif origin == 'settings':
             changeit = Settings(thein[1:])
         elif origin == 'exit' or origin == 'quit':
@@ -126,7 +126,7 @@ def main(TI,ID,answer):#The Input, Initial Data
                 ANSWER = eval(TI)
             except:
                 return "xError"
-    except:
+    except FileNotFoundError:
         return "cERROR"
     return ANSWER
 answer = 0        
