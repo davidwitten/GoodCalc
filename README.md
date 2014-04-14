@@ -8,7 +8,7 @@ Functions
 
     /choose x y
 
-Returns the value of x!/((y!)(y-x)!)
+Returns the value of x!/(y!(y-x)!)
 
     /prime x
 
