@@ -3,28 +3,34 @@ print("Remember, when doing a function, always have '/' in front!")
 from math import *
 import operator
 ID = {'trig':0}#0 = radians, 1 = degrees
-def string(x):
-    print()
-def evaluate(string, ID, answer):
-    while string.count('/') != 0:
-        if string.count('(') != 0:
-            evalthis = string[string.rfind('('):string.find(')') + 1]
-            print(string.rfind('('))
-            print(string.find(')'))
-            input(evalthis)
-            newthis = evalthis.replace('(','').replace(')','')
-            z = main(newthis, 0, answer)
-            string = string.replace(evalthis,str(z[0]))
-            print(string)
-        else:
-            newthis = string
-            z = main(newthis, 0, answer)
-            string = string.replace(string,str(z[0]))
-        print(string)
-    if len(string.split()) == 1:
-        return string
-    else:
-        return main(string,0, answer)
+def string(x, ID, answer):
+    while x.count('(') != 0:
+        OL = []
+        EL = []
+        for j,i in enumerate(x):
+            if i == '(':
+                OL.append(j)
+            elif i == ')':
+                EL.append(j)
+        for i1, n1 in enumerate(OL):
+            if n1 != OL[-1]:
+                for i2, n2 in enumerate(EL):
+                    if n2 in range(n1, OL[i1 + 1]):
+                        newt = x[n1:n2 + 1]
+                        Enewt = newt.replace('(','').replace(')','')
+                        z = main(Enewt, ID, answer)
+                        x = x.replace(newt,str(z))
+                        break
+                break
+
+            else:
+                newt = x[n1:EL[-1] + 1]
+                Enewt = newt.replace('(','').replace(')','')
+                z = main(Enewt, ID, answer)
+                x = x.replace(newt,str(z))
+            break
+    return main(x,0,0)
+                    
 def factors(number):
     factor = []
     for i in range(2,int(number/2) + 1):
@@ -73,7 +79,8 @@ def main(TI,ID,answer):#The Input, Initial Data
     thein = TI[1:]
     thein = thein.split()
     ID = ID
-    thein[1:] = [eval(i) for i in thein[1:]]
+    if '/' in TI:
+        thein[1:] = [eval(i) for i in thein[1:]]
     try:
         origin = thein[0].lower()
     except IndexError:
@@ -122,26 +129,20 @@ def main(TI,ID,answer):#The Input, Initial Data
             print(ID)
             ANSWER = 'DONE'
         else:
-            if "+" in TI or "-" in TI or "*" in TI or "/" in TI:
-                try:
-                    ANSWER = eval(TI)
-                except ImportError:
-                    return "ERROR"
-            else:
-                return "ERROR"
-    except FileNotFoundError:
-        return "ERROR"
-    return [ANSWER,ID]
+            TI = str(TI)
+            try:
+                ANSWER = eval(TI)
+            except:
+                return "xError"
+    except:
+        return "cERROR"
+    return ANSWER
 answer = 0        
 while 1:
     x = input('>>> ')
     if '(' in x:
-        answer = evaluate(x, ID, answer)
+        answer = string(x, ID, answer)
+        
     else:
         answer = main(x,ID,answer)
-    if answer == list(answer):
-            
-        print(answer[0])
-        ID = answer[1]
-    else:
-        print(answer)
+    print(answer)
