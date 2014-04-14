@@ -3,39 +3,21 @@ print("Remember, when doing a function, always have '/' in front!")
 from math import *
 import operator
 ID = {'trig':0}#0 = radians, 1 = degrees
+def TO(string):
+    return string.replace('(','').replace(')','')
 def string(x, ID, answer):
     while x.count('(') != 0:
-        OL = []
-        EL = []
-        for j,i in enumerate(x):
-            if i == '(':
-                OL.append(j)
-            elif i == ')':
-                EL.append(j)
-        for i1, n1 in enumerate(OL):
-            if n1 != OL[-1]:
-                fork = 0
-                for i2, n2 in enumerate(EL):
-                    if n2 in range(n1, OL[i1 + 1]):
-                        newt = x[n1:n2 + 1]
-                        Enewt = newt.replace('(','').replace(')','')
-                        z = main(Enewt, ID, answer)
-                        x = x.replace(newt,str(z))
-                        fork += 1
-                        break
-                if fork == 0:
-                    newt = x[x.rfind('('):x.find(')') + 1]
-                    Enewt = newt.replace('(','').replace(')','')
-                    z = main(Enewt,ID, answer)
-                    x = x.replace(newt, str(z))
+        Oi = 0
+        Ei = 0
+        for i,n in enumerate(x):
+            if n == '(':
+                Oi = i
+            elif n == ')':
+                Ei = i
                 break
-
-            else:
-                newt = x[n1:EL[-1] + 1]
-                Enewt = newt.replace('(','').replace(')','')
-                z = main(Enewt, ID, answer)
-                x = x.replace(newt,str(z))
-            break
+        newt = x[Oi: Ei + 1]
+        z = main(TO(newt),0,0)
+        x = x.replace(newt,str(z))
     return main(x,0,0)
                     
 def factors(number):
