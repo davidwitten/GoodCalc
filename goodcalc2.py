@@ -28,7 +28,8 @@ def factors(number):
     return factor
 def Help():
     thedict = {'/settings':'Change Settings','/prime x':'Returns 1 if prime, 0 otherwise','/primerange x y':'Returns a list of primes from x to y','/factor x':'Returns the factors of x','/sumlist x y z ...':'Returns sum of list',\
-               '/choose x y ':'Returns the value of xCy','/comment abcde':'Returns the comment'}
+               '/choose x y ':'Returns the value of xCy','/comment abcde':'Returns the comment','/grade a b c':'Evaluates as if a is worth 60%, b- 30%, c- 10%','/sqrt x':'Returns the square root of x','/sin x':'Returns sin(x)',\
+               '/cos x':'Returns cos(x)','/tan x':'Returns tan(x)','/meanlist list':'Returns the mean of the list','/sortedlist list':'Returns the the sorted list that was entered.'}
     items = sorted(thedict.keys())
     print('%-20s%-30s'%('Function', 'Use\n'))
     for i in items:    
@@ -40,20 +41,14 @@ def list_to_string(other):
         string += str(i)
     return string
 def prime(number):
+    if number == 1: return 0
     for i in range(2, int(sqrt(number))+1):
         if number%i == 0:
             return 0
     return 1
 def primerange(low,high):
-    el = []
-    low = int(low)
-    if low == 1:
-        low = 2
-    high = int(high)
-    for i in range(low,high + 1):
-        if prime(i):
-            el.append(str(i))
-    re = ' '.join(el)
+    el = [str(i) for i in range(int(low), int(high) + 1)]
+    re = ' '.join(list(filter(lambda x: prime(int(x)) == 1, el)))
     return re
 def Settings(MR):
     MR += ' '
@@ -114,8 +109,10 @@ def main(TI,ID,answer):#The Input, Initial Data
                 ANSWER = eval(str(origin[:-4]) + '(' + str(newlist) + ')')
                 #
             else:
-                try:ANSWER = sum(newlist)/len(thein)-1
-                except:return False
+                try:
+                    ANSWER = sum(newlist)/(len(thein)-1)
+                
+                except:return 'ERROR'
         elif origin == 'sto':
             ID[thein[1]] = thein[2]
             print(ID)
@@ -125,9 +122,9 @@ def main(TI,ID,answer):#The Input, Initial Data
             try:
                 ANSWER = eval(TI)
             except:
-                return "xError"
+                return "ERROR"
     except FileNotFoundError:
-        return "cERROR"
+        return "ERROR"
     return ANSWER
 answer = 0        
 while 1:
