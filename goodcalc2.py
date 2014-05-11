@@ -4,6 +4,7 @@ import datetime
 print("Welcome to \"Good Calculator\"")
 print("Remember, when doing a function, always have '/' in front!")
 print("Enter '/help' for help\n")
+print()
 ID = {'trig':0}#0 = radians, 1 = degrees
 def TO(string):
     return string.replace('(','').replace(')','')
