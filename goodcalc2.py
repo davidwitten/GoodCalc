@@ -1,8 +1,9 @@
+from math import *
+import operator
+import datetime
 print("Welcome to \"Good Calculator\"")
 print("Remember, when doing a function, always have '/' in front!")
 print("Enter '/help' for help\n")
-from math import *
-import operator
 ID = {'trig':0}#0 = radians, 1 = degrees
 def TO(string):
     return string.replace('(','').replace(')','')
@@ -14,6 +15,7 @@ def evaluate(TI,ID,answer):
             TI[TI.index(i)] = TI[TI.index(i)].replace(i,"ID['" + i + "']")
     return ' '.join(TI)
 def string(x, ID, answer):
+    origin = x
     while x.count('(') + x.count(')') != 0:
         Oi = 0
         Ei = 0
@@ -25,9 +27,14 @@ def string(x, ID, answer):
                 break
         newt = x[Oi: Ei + 1]
         newt = evaluate(newt, ID, answer)
-        z = main(TO(newt),ID,answer)
+        z = main(TO(newt),ID,answer,1)
+        if x == 'ERROR':
+            return main(origin,ID,answer,1)
         x = x.replace(newt,str(z))
-    return main(x,ID,answer)
+    b = main(x,ID, answer,1)
+    if b != 'ERROR':
+        x = b
+    return x
 def factors(number):
     factor = []
     for i in range(1,int(number/2) + 1):
@@ -45,7 +52,9 @@ def Help():
     print('%-20s%-30s'%('Function', 'Use\n'))
     for i in items:    
         print('%-20s%-30s'%(i,thedict.get(i)))
-    
+def ngon(x,y):
+    for i in range(1,y + 1):
+        yield ((i**2)*(x - 2) - (i * (x - 4)))//2
 def list_to_string(other):
     string = ''
     for i in other:
@@ -72,20 +81,34 @@ def Settings(MR):
     mode = MR[0]
     if mode == 'ch' or mode == 'change':
         pass
-def main(TI,ID,answer):#The Input, Initial Data
+def main(TI,ID,answer,j):#The Input, Initial Data
     g = evaluate(TI, ID, answer)
+    if j == 0:
+        g = string(g,ID,answer)
+    
     ANSWER = ''
     origin = ''
-    thein = g[1:]
+    thein = str(g)
     thein = thein.split()
+    for n,i in enumerate(thein):
+        try:
+            thein[n] = eval(i)
+        except:
+            pass
+        
     try:
-        thein[1:] = [eval(i) for i in thein[1:]]
+        test = list(filter(lambda x: int(x) != x,thein))
     except:
-        ANSWER = 'error'
+        test = ['nope']
+        
+    if test == []:
+        return True
+    
     try:
-        origin = thein[0].lower()
+        origin = thein[0][1:].lower()
     except:
         pass
+    
     try:
         if origin == 'choose':
             ANSWER = (factorial(thein[1]))//(factorial(thein[1] - thein[2]) * factorial(thein[2]))
@@ -95,6 +118,10 @@ def main(TI,ID,answer):#The Input, Initial Data
             ANSWER = factorial(thein[1])
         elif origin == 'comment':
             ANSWER = TI[9:]
+        elif origin == 'dow':
+            date = datetime.date(int(thein[3]),int(thein[1]),int(thein[2]))
+            daychart = ['Mon','Tues','Wednes','Thurs','Fri','Satur','Sun']
+            ANSWER = daychart[date.weekday()] + 'day'
         elif origin == 'sqrt':
              ANSWER =  sqrt(thein[1])
         elif origin in ['sin','cos','tan']:
@@ -104,6 +131,7 @@ def main(TI,ID,answer):#The Input, Initial Data
                 ANSWER = eval(origin + '(radians(int(thein[1]))')
         elif origin == 'help':
             Help()
+            return 0
         elif origin == 'grade':
             ANSWER = ((thein[1] * 60) + (thein[2] * 30) + (thein[3] * 10))/100
             #grade: formative, summative, hw
@@ -116,6 +144,7 @@ def main(TI,ID,answer):#The Input, Initial Data
             else:
                 ANSWER = log10(thein[1])
         elif origin == 'loop':
+            DList = []
             if ' in ' not in thein:
                 for i in range(int(thein[2]),int(thein[3]),int(thein[4])):
                     z = TI[TI.index('{') + 1:]
@@ -123,12 +152,18 @@ def main(TI,ID,answer):#The Input, Initial Data
                         a = z.index(thein[1])
                         b = z.index(thein[1][-1])
                         z = z[:a] + str(i) + z[b+1:]
-                    print(main(z,ID,answer))
-            ANSWER = ''
+                    DList.append(str(main(z,ID,answer,1)))
+                    print(DList[-1])
+            ANSWER = ' '.join(DList)
+        elif origin == 'ngon':
+            z = [str(j) for j in ngon(thein[1],thein[2])]
+            for i in z:
+                print(i)
+            ANSWER = ' '.join(z)
         elif origin == 'pascr':
             ANSWER = ' '.join([str(main('/choose ' + str(thein[1]) + ' ' + str(i),ID,answer)) for i in range(thein[1] + 1)])
         elif origin == 'perfect':
-            ANSWER = (thein[1] == sum([int(i) for i in factors(thein[1])[:-1]]))
+            ANSWER = int(thein[1] == sum([int(i) for i in factors(thein[1]).split()[:-1]]))
         elif origin == 'perfrange':
             ANSWER = perfrange(thein[1],thein[2])
         elif origin == 'perm':
@@ -149,41 +184,41 @@ def main(TI,ID,answer):#The Input, Initial Data
         elif origin == 'settings':
             changeit = Settings(thein[1:])
         elif origin == 'exit' or origin == 'quit':
-            ANSWER = 'LoopDone'
-        elif origin in ['sumlist','sortedlist','meanlist','lenlist']:
+            return 'Truth'
+        elif origin in ['sum','sorted','mean','len']:
             try:
                 newlist = [float(i) for i in thein[1:]]
             except: return "ERROR"
             if origin != 'meanlist':
                 #
-                ANSWER = eval(str(origin[:-4]) + '(' + str(newlist) + ')')
+                ANSWER = eval(str(origin) + '(' + str(newlist) + ')')
                 #
             else:
                 try:
                     ANSWER = sum(newlist)/(len(thein)-1)
                 
-                except:return 'ERROR'
+                except:
+                    return 'ERROR'
         elif origin == 'sto':
             ID[thein[1]] = int(thein[2])
             print(ID)
-            ANSWER = 'DONE'
+            ANSWER = 'done'
         else:
             try:
-                ANSWER = eval(g)
+                ANSWER = eval(str(g))
             except Exception as e:
-                return e
+                print(e)
+                return "ERROR"
     except Exception as e:
-        return e
+        print(e)
+        return "ERROR"
     return ANSWER
 answer = 0
 done = False
 while done == False: 
     x = input(">>> ")
-    if '(' in x:
-        answer = string(x, ID, answer)
-        
-    else:
-        answer = main(x,ID,answer)
-    if answer == 'LoopDone':
+    answer = main(x,ID,answer,0)
+    if answer == 'Truth':
+        answer = 'Finished'
         done = True
     print(answer)
