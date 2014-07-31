@@ -3,12 +3,12 @@ from operator import *
 import datetime
 from itertools import *
 from functools import *
+from fractions import * 
 print("Welcome to \"Good Calculator\"")
 print("Remember, when doing a function, always have '/' in front!")
 print("Enter '/dem' for a demonstration")
-print("Enter '/help' for help\n")
-print()
-ID = {'trig': 0}  #initial data
+print("Enter '/help' for help\n\n")
+ID = {}  #initial data
 
 
 def TO(string):
@@ -132,7 +132,9 @@ def Help():
                '/conc a b c d ...':'It concatenates the terms a b c d',\
                '/simpf x y':'Returns the simplified fraction of x/y',\
                '/trunc x':'Returns the truncated form of x',\
-               '/equal a b':'Returns True if a == b, False if not.'
+               '/equal a b':'Returns True if a == b, False if not.','/conv n b':'Converts n from base b to base 10',\
+               '/pfactor x': 'Returns the prime factorization of x','/not x':'Returns not(x)',\
+               '/if statement action':'Returns the action, if the statement is true',\
                }
     items = sorted(thedict.keys())
     go += ('%-20s%-30s' % ('Function', 'Use\n'))
@@ -158,13 +160,12 @@ def primerange(low, high):
     re = ' '.join(list(filter(lambda x: prime(int(x)) == 1, el)))
     return re
 
-
 def perfrange(low, high):
-    el = [str(i) for i in range(int(low), int(high) + 1)]
-    re = ' '.join(list(filter(lambda x: sum([int(i) for i in factors(int(x)).split()[:-1]]) == int(x), el)))
-    return re
-
-
+    a,z = [6, 28, 496, 8128, 33550336, 8589869056, 137438691328, 2305843008139952128,191561942608236107294793378084303638130997321548169216,13164036458569648337239753460458722910223472318386943117783728128],[]
+    for i in a:
+        if i in range(low,high):
+            z.append(str(i))
+    return ' '.join(z)
 def Settings(MR):
     MR += ' '
     print("Welcome to settings, here you can change and view settings.")
@@ -286,16 +287,21 @@ def main(TI, ID, answer, j):  #The Input, Initial Data, answer, eval or not
             return equal(thein[1],thein[2])
         elif origin == 'distl':
             return ' '.join([str(i) for i in distl(thein[1:])])
+        elif origin == 'frac':
+            return ' '.join(str(Fraction(str(thein[1]))).split('/'))
         elif origin == 'sqrt':
             return sqrt(thein[1])
         elif origin in ['sin', 'cos', 'tan']:
-            if ID['trig'] == 0:
+            if thein[2] == 'r':
                 return eval(origin + '(int(thein[1]))')
             else:
-                return eval(origin + '(radians(int(thein[1]))')
+                return eval(origin + '(radians(int(thein[1])))')
         elif origin == 'help':
             a = Help()
             return a
+        elif origin == 'if':
+            if thein[1]:
+                return thein[2]
         elif origin == 'int':
             return int(str(thein[1]), thein[2])
         elif origin == 'filter':
@@ -311,6 +317,12 @@ def main(TI, ID, answer, j):  #The Input, Initial Data, answer, eval or not
             return ' '.join([str(i) for i in list(map(go, thein[2:]))])
         elif origin == 'lcm':
             return lcm(thein[1],thein[2])
+        elif origin == 'len':
+            a = len(thein[1:])
+            if a == 1:
+                if thein[1] == str(thein[1]):
+                    a = len(thein[1])
+            return a
         elif origin == 'ln':
             return log1p(thein[1] - 1)
             #For log1p it computes ln(x + 1)
@@ -331,11 +343,13 @@ def main(TI, ID, answer, j):  #The Input, Initial Data, answer, eval or not
                     if thein[1] in z:
                         a = z.index(thein[1])
                         b = z.index(thein[1][-1])
-                        z = z[:a] + str(i) + z[b + 1:]
+                        z = z.replace(thein[1],str(i))
                         #print(z)
                     DList.append(str(main(z, ID, answer, 0)))
                     #print(DList[-1])
             return '\n'.join(DList)
+        elif origin == 'not':
+            return not(thein[1])
         elif origin == 'ngon':
             z = [str(j) for j in ngon(thein[1], thein[2])]
             return ' '.join(z)
@@ -359,7 +373,7 @@ def main(TI, ID, answer, j):  #The Input, Initial Data, answer, eval or not
         elif origin == 'primerange':
             return primerange(thein[1], thein[2])
         elif origin == 'prod':
-            return reduce(mul, thein[1:], 1)
+            return reduce(mul, SplitS(thein[1:]), 1)
         elif origin == 'range':
             if len(thein) == 3:
                 thein.append(1)
@@ -376,12 +390,15 @@ def main(TI, ID, answer, j):  #The Input, Initial Data, answer, eval or not
             great = gcf(thein[1],thein[2])
             return str(thein[1]//great) + ' ' + str(thein[2]//great)
         elif origin == 'str':
-            return str(justSTRING[1])
+            return str(thein[1])
         elif origin == 'trunc':
             return trunc(thein[1])
+        elif origin == 'vars':
+            print(tuple(ID.keys()))
+            return 'done'
         elif origin == 'exit' or origin == 'quit':
             return 'Truth'
-        elif origin in ['sum', 'sorted', 'mean', 'len']:
+        elif origin in ['sum', 'sorted', 'mean']:
             if origin == 'sum':
                 origin = 'fsum'
             try:
@@ -396,9 +413,9 @@ def main(TI, ID, answer, j):  #The Input, Initial Data, answer, eval or not
                 except FileExistsError:
                     return 'ERROR'
         elif origin == 'sto':
-            print(thein)
+            #print(thein)
             ID[thein[1]] = SplitS(thein[2:])
-            print(ID)
+            #print(ID)
             return 'done'
         else:
             try:
