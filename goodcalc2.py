@@ -122,7 +122,7 @@ def Help():
                '/log [x] y': 'x specifies the base, and y is the value, when x is not there, it is reverted to the common logarithm', \
                '/ln x': 'Returns the natural logarithm of x', '/pascr n': "Returns the n'th row of Pascal's Triangle",\
                '/lcm a b':'Returns the least common multiple of a and b', '/gcf a b':'Returns greatest common factor of a and b',\
-               '/loop i begin end step {function ':'Creates a loop for functions to keep iterating','/sto x value':'Store a value for x to continue using',\
+               '/loop i beg end step {funct':'Creates a loop for functions to keep iterating','/sto x value':'Store a value for x to continue using',\
                '/dow month day year':'Returns day of the week','/ngon n a':'Lists an "a" amount of n-gons.','/int # base': 'Returns the number in base 10',\
                '/permute a': 'a can be a # or string, it returns the all of the permutations of a','/prod [list]':'Returns the product of the items in the list',\
                '/distl [list]':'Returns all of the distinct items in a list','/exit':'Exits the program',\
@@ -135,11 +135,17 @@ def Help():
                '/equal a b':'Returns True if a == b, False if not.','/conv n b':'Converts n from base b to base 10',\
                '/pfactor x': 'Returns the prime factorization of x','/not x':'Returns not(x)',\
                '/if statement action':'Returns the action, if the statement is true',\
+               '/right a b c':'Returns true if it is a right triangle.',\
+               '/frac x':'Converts number to fraction',\
+               '/len a b c d ...':'Returns length of list',\
+               '/perfrange a b':'Returns all perfect numbers from a to b','/perm n r':'returns nPr (n!/(n-r)!)',\
+               '/range a b [c]':'Returns a range from a to b, with step c','/vars':'Returns variables (alternative: ID)',\
                }
     items = sorted(thedict.keys())
     go += ('%-20s%-30s' % ('Function', 'Use\n'))
     for i in items:
-        go += '\n' + ('%-20s%-30s' % (i, thedict.get(i)))
+        go += '\n' + ('%-30s%-30s' % (i, thedict.get(i)))
+    go += '\n\n' + ('%-30s%-30s' % ('Functions:', str(len(thedict.keys()))))
     return go
 
 
@@ -261,10 +267,6 @@ def main(TI, ID, answer, j):  #The Input, Initial Data, answer, eval or not
     try:
         if origin == 'choose':
             return (factorial(thein[1])) // (factorial(thein[1] - thein[2]) * factorial(thein[2]))
-        elif origin == 'factor' or origin == 'factors':
-            return factors(thein[1])
-        elif origin == 'factorial':
-            return factorial(thein[1])
         elif origin == 'comment':
             return TI[9:]
         elif origin == 'conc':
@@ -287,6 +289,10 @@ def main(TI, ID, answer, j):  #The Input, Initial Data, answer, eval or not
             return equal(thein[1],thein[2])
         elif origin == 'distl':
             return ' '.join([str(i) for i in distl(thein[1:])])
+        elif origin == 'factor' or origin == 'factors':
+            return factors(thein[1])
+        elif origin == 'factorial':
+            return factorial(thein[1])
         elif origin == 'frac':
             return ' '.join(str(Fraction(str(thein[1]))).split('/'))
         elif origin == 'sqrt':
@@ -394,8 +400,7 @@ def main(TI, ID, answer, j):  #The Input, Initial Data, answer, eval or not
         elif origin == 'trunc':
             return trunc(thein[1])
         elif origin == 'vars':
-            print(tuple(ID.keys()))
-            return 'done'
+            return tuple(ID.keys())
         elif origin == 'exit' or origin == 'quit':
             return 'Truth'
         elif origin in ['sum', 'sorted', 'mean']:
