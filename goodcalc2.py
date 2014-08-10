@@ -3,13 +3,14 @@ from operator import *
 import datetime
 from itertools import *
 from functools import *
-from fractions import * 
+from fractions import *
+from random import *
 print("Welcome to \"Good Calculator\"")
 print("Remember, when doing a function, always have '/' in front!")
 print("Enter '/dem' for a demonstration")
 print("Enter '/help' for help\n\n")
 ID = {}  #initial data
-
+thedict = {}
 
 def TO(string):
     return string.replace('(', '').replace(')', '')
@@ -18,7 +19,7 @@ def demonstrate():
     z = '>>> '
     string = ''
     string += ("This is a demonstration of the implementation of the '/choose' function\n")
-    string += (z + '(/choose 3 2) * 2\n')
+    string += (z + '(/choose 3 2) ** 2\n')
     string += ('Answer:\n')
     string += ('9\n')
     string += ('\nIt is essential that you use parentheses to alleviate confusion over order of operations.\n')
@@ -46,7 +47,7 @@ def evaluate(TI, ID, answer):
     TI = str(TI)
     TI = TI.split()
     unwanted = '___z___z___'
-    if 'loop' in TI[0]:
+    if 'loop' in TI[0]: 
         unwanted = TI[1]    
     for i in TI:
         if i in ID and i != unwanted:
@@ -84,6 +85,15 @@ def string(x, ID, answer):
         return x
     return origin
 
+def rep(string,sub,changeto, orig=[]):
+    x = string.split()
+    for n,i in enumerate(x):
+        if i == sub:
+            x[n] = changeto
+        elif (sub in i) and (not(i.isalpha()) and not(i.replace('/','') in orig)):#not sure about last one, this is a kind of an iffy method
+            x[n] = x[n].replace(sub,changeto)
+            
+    return ' '.join(x)
 
 def factors(number):
     factor = []
@@ -110,6 +120,7 @@ def lcm(a,b):
 
 def Help():
     go = ''
+    global thedict
     thedict = {'/settings': 'Change Settings', '/prime x': 'Returns 1 if prime, 0 otherwise',\
                '/primerange x y': 'Returns a list of primes from x to y', '/factor x': 'Returns the factors of x',\
                '/sum x y z ...': 'Returns sum of list', \
@@ -139,7 +150,10 @@ def Help():
                '/frac x':'Converts number to fraction',\
                '/len a b c d ...':'Returns length of list',\
                '/perfrange a b':'Returns all perfect numbers from a to b','/perm n r':'returns nPr (n!/(n-r)!)',\
-               '/range a b [c]':'Returns a range from a to b, with step c','/vars':'Returns variables (alternative: ID)',\
+               '/range a b [c]':'Returns a range from a to b, with step c','/vars':'Returns variables (alternative: "ID")',\
+               '/randcho a b c d...':'Randomly chooses object from list','/randint a b':'Returns a random integer from a to b',\
+               '/randrange a [b] [c]':'Returns a random number from a range of a to b, with step c',\
+               '/factorial x':'Returns the factorial of x (ALSO /! x)',\
                }
     items = sorted(thedict.keys())
     go += ('%-20s%-30s' % ('Function', 'Use\n'))
@@ -148,7 +162,7 @@ def Help():
     go += '\n\n' + ('%-30s%-30s' % ('Functions:', str(len(thedict.keys()))))
     return go
 
-
+Help()
 def ngon(x, y):
     for i in range(1, int(y) + 1):
         yield ((i ** 2) * (x - 2) - (i * (x - 4))) // 2
@@ -220,7 +234,19 @@ def SplitS(string):
     except:
         pass
     return string
+def IC(go,List):
+    z = str(go) + '(i)'
+    return [eval(z) for i in List]
+def ListFunct(thein, justSTRING,start,split = True):
+    a = ' '.join([str(i) for i in thein[start:]])
+    if justSTRING[start] == 'answer':
+        a = SplitS(''.join(thein[start:]))
+    if split:
+        return SplitS(a)
+    return a
 def main(TI, ID, answer, j):  #The Input, Initial Data, answer, eval or not
+    global thedict
+    origins = ' '.join([i.split()[0][1:] for i in thedict.keys()])
     equal = partial(lambda x,y: x == y)
     notbad = 0
     LIST = False
@@ -231,8 +257,7 @@ def main(TI, ID, answer, j):  #The Input, Initial Data, answer, eval or not
             if g[g.index('[') -1]== '(' or g[g.index('[')-1] == ' ':
                 notbad = 1
         if notbad == 1:
-            g = g.replace('[','')
-            g = g.replace(']','')
+            g = g.replace('[','').replace(']','')
             LIST = True
     if j == 0:
         if 'loop' not in TI:            
@@ -274,9 +299,7 @@ def main(TI, ID, answer, j):  #The Input, Initial Data, answer, eval or not
         elif origin == 'conv':
             return int(str(thein[1]),thein[2])
         elif origin == 'count':
-            a = ''.join([str(i) for i in thein[2:]])
-            if justSTRING[2] == 'answer':
-                a = SplitS(''.join(thein[2:]))
+            a = ListFunct(thein,justSTRING,2)
             return a.count(str(thein[1]))
         elif origin == 'dem':
             c = demonstrate()
@@ -288,10 +311,11 @@ def main(TI, ID, answer, j):  #The Input, Initial Data, answer, eval or not
         elif origin == 'equal':
             return equal(thein[1],thein[2])
         elif origin == 'distl':
-            return ' '.join([str(i) for i in distl(thein[1:])])
+            a = ListFunct(thein, justSTRING, 1)
+            return ' '.join([str(i) for i in distl(a)])
         elif origin == 'factor' or origin == 'factors':
             return factors(thein[1])
-        elif origin == 'factorial':
+        elif origin == 'factorial' or origin == '!':
             return factorial(thein[1])
         elif origin == 'frac':
             return ' '.join(str(Fraction(str(thein[1]))).split('/'))
@@ -324,11 +348,8 @@ def main(TI, ID, answer, j):  #The Input, Initial Data, answer, eval or not
         elif origin == 'lcm':
             return lcm(thein[1],thein[2])
         elif origin == 'len':
-            a = len(thein[1:])
-            if a == 1:
-                if thein[1] == str(thein[1]):
-                    a = len(thein[1])
-            return a
+            a = ListFunct(thein,justSTRING,1)
+            return len(a)
         elif origin == 'ln':
             return log1p(thein[1] - 1)
             #For log1p it computes ln(x + 1)
@@ -349,11 +370,16 @@ def main(TI, ID, answer, j):  #The Input, Initial Data, answer, eval or not
                     if thein[1] in z:
                         a = z.index(thein[1])
                         b = z.index(thein[1][-1])
-                        z = z.replace(thein[1],str(i))
+                        z = rep(z,thein[1],str(i),origins.split())
+                        z = string(z,ID,answer)
+                        #z = z.replace(thein[1],i)
                         #print(z)
                     DList.append(str(main(z, ID, answer, 0)))
                     #print(DList[-1])
             return '\n'.join(DList)
+        elif origin == 'mean':
+            a = ListFunct(thein, justSTRING,1)
+            return sum(a)/len(a)
         elif origin == 'not':
             return not(thein[1])
         elif origin == 'ngon':
@@ -381,12 +407,20 @@ def main(TI, ID, answer, j):  #The Input, Initial Data, answer, eval or not
         elif origin == 'prod':
             return reduce(mul, SplitS(thein[1:]), 1)
         elif origin == 'range':
+            r = tuple(thein[1:])
             if len(thein) == 3:
                 thein.append(1)
-            return ' '.join(str(i) for i in range(thein[1],thein[2],thein[3]))
+            return ' '.join(str(i) for i in eval('range' + str(r)))
+        elif origin == 'randcho':
+            a = ListFunct(thein,justSTRING, 1)
+            return choice(a)
+        elif origin == 'randint':
+            return randint(thein[1],thein[2])
+        elif origin == 'randrange':
+            return eval('randrange' + str(tuple(thein[1:])))
         elif origin == 'right':
-            sides = sorted([thein[1], thein[2], thein[3]])
-            if pow(sides[0], 2) + pow(sides[1], 2) == pow(sides[2], 2):
+            sides = list(map(lambda x: x**2, sorted([thein[1], thein[2], thein[3]])))
+            if sum(sides[:2]) == sides[2]:
                 return 1
             else:
                 return 0
@@ -395,28 +429,20 @@ def main(TI, ID, answer, j):  #The Input, Initial Data, answer, eval or not
         elif origin == 'simpf':
             great = gcf(thein[1],thein[2])
             return str(thein[1]//great) + ' ' + str(thein[2]//great)
+        elif origin == 'sorted':
+            a = ListFunct(thein, justSTRING, 1,False)
+            return ' '.join(sorted(a))
         elif origin == 'str':
             return str(thein[1])
+        elif origin == 'sum':
+            a = ListFunct(thein, justSTRING, 1)
+            return sum(a)
         elif origin == 'trunc':
             return trunc(thein[1])
         elif origin == 'vars':
             return tuple(ID.keys())
         elif origin == 'exit' or origin == 'quit':
             return 'Truth'
-        elif origin in ['sum', 'sorted', 'mean']:
-            if origin == 'sum':
-                origin = 'fsum'
-            try:
-                newlist = SplitS(thein[1:])
-            except FileExistsError:
-                return "ERROR"
-            if origin != 'mean':
-                return eval(str(origin) + '(' + str(SplitS(newlist)) + ')')
-            else:
-                try:
-                    return sum(newlist) / (len(thein) - 1)
-                except FileExistsError:
-                    return 'ERROR'
         elif origin == 'sto':
             #print(thein)
             ID[thein[1]] = SplitS(thein[2:])
@@ -425,10 +451,10 @@ def main(TI, ID, answer, j):  #The Input, Initial Data, answer, eval or not
         else:
             try:
                 return eval(str(g))
-            except KeyboardInterrupt:
-                return answer
-    except KeyboardInterrupt:
-        return answer
+            except FileNotFoundError: #Exception as e:
+                return e
+    except FileNotFoundError:#Exception as e:
+        return e
 
 
 answer = 0
