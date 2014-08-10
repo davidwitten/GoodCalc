@@ -364,18 +364,32 @@ def main(TI, ID, answer, j):  #The Input, Initial Data, answer, eval or not
                 return log10(thein[1])
         elif origin == 'loop':
             DList = []
-            if ' in ' not in thein:
-                for i in range(int(thein[2]), int(thein[3]), int(thein[4])):
-                    z = TI[TI.index('{') + 1:]
-                    if thein[1] in z:
-                        a = z.index(thein[1])
-                        b = z.index(thein[1][-1])
-                        z = rep(z,thein[1],str(i),origins.split())
-                        z = string(z,ID,answer)
-                        #z = z.replace(thein[1],i)
-                        #print(z)
-                    DList.append(str(main(z, ID, answer, 0)))
-                    #print(DList[-1])
+            thedex = -1
+            for n,i in enumerate(thein):
+                if '{' in str(i):
+                    thedex = n
+                    break
+            try:
+                x = ' '.join(thein[2:n])
+            except TypeError:
+                x = ' '.join([str(i) for i in thein[2:n]])
+                try:
+                    SplitS(x) == IC('int',SplitS(x))
+                    x = '(/range ' + x + ')'
+                except ValueError:
+                    x = ' '.join([str(i) for i in thein[2:n]]).replace('(','').replace(')','')
+                
+            for i in SplitS(string(x,ID,answer)):
+                z = TI[TI.index('{') + 1:]
+                if thein[1] in z:
+                    a = z.index(thein[1])
+                    b = z.index(thein[1][-1])
+                    z = rep(z,thein[1],str(i),origins.split())
+                    z = string(z,ID,answer)
+                    #z = z.replace(thein[1],i)
+                    #print(z)
+                DList.append(str(main(z, ID, answer, 0)))
+                #print(DList[-1])
             return '\n'.join(DList)
         elif origin == 'mean':
             a = ListFunct(thein, justSTRING,1)
@@ -451,9 +465,9 @@ def main(TI, ID, answer, j):  #The Input, Initial Data, answer, eval or not
         else:
             try:
                 return eval(str(g))
-            except FileNotFoundError: #Exception as e:
+            except Exception as e:
                 return e
-    except FileNotFoundError:#Exception as e:
+    except Exception as e:
         return e
 
 
