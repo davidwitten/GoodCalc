@@ -265,9 +265,8 @@ def main(TI,answer, j):  #The Input, Initial Data, answer, eval or not
     LIST = False
     justSTRING = TI.split()
     g = evaluate(TI, ID, answer)
-    print(g)
-    if '[' in g and ']' in g:
-        return ' '.join(SplitS(g[g.index('[') + 1:g.index(']')]))
+##    if '[' in g and ']' in g:
+##        return ' '.join(SplitS(g[g.index('[') + 1:g.index(']')]))
     if j == 0:
         if 'loop' not in TI:            
             g = string(g, ID, answer)
