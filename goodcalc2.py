@@ -1,3 +1,5 @@
+#Made by David W.
+#(c) 2014
 from math import *
 from operator import *
 import datetime
@@ -6,16 +8,20 @@ from functools import *
 from fractions import *
 from random import *
 #Notes, add parsing in loops by line
+##/root (base) # cube root etc.
 print("Welcome to \"Good Calculator\"")
 print("Remember, when doing a function, always have '/' in front!")
 print("Enter '/dem' for a demonstration")
 print("Enter '/help' for help\n\n")
 ID = {}  #initial data
 thedict = {}
-
 def TO(string):
     return string.replace('(', '').replace(')', '')
-
+def example(a):
+    thedict = {'choose':"/choose 3 2 = 3",
+               'loop':"/loop i (/range 1 10 [1]) {i = 1 2 3 4 5 ... 9 OR /loop i 1 10 {i = the same thing",
+               'perm':'/perm 3 2 = 6',
+               }
 def demonstrate():
     z = '>>> '
     string = ''
@@ -23,7 +29,7 @@ def demonstrate():
     string += (z + '(/choose 3 2) ** 2\n')
     string += ('Answer:\n')
     string += ('9\n')
-    string += ('\nIt is essential that you use parentheses to alleviate confusion over order of operations.\n')
+    string += ('\nIt is recommended that you use parentheses to alleviate confusion over order of operations.\n')
     string += ("\nHere is a demonstration of a more complex function: The '/loop' function\n\n")
     string += (z + '/loop i 1 10 1 {/choose 10 i\n')
     string += ('This can also be written as:\n')
@@ -110,7 +116,6 @@ def factors(number):
     factor = sorted([int(i) for i in factor])
     return ' '.join(list(map(str,factor)))
 
-
 def gcf(a,b):
     alist = [int(i) for i in distl(factors(a).split())]
     large = 1
@@ -162,6 +167,8 @@ def Help():
                '/factorial x':'Returns the factorial of x (ALSO /! x)','/max a b c d e...':'Returns max of list a-e',\
                '/min a b c d e...':'Returns max of list','/gt a b':'Returns True if a > b, False otherwise','/ge a b':'Returns True if a >= b, False otherwise',\
                '/lt a b':'True if a < b','/le a b':'True if a <= b','/ne a b':'Returns True if a != b',\
+               '/root x':'Returns the nth root of x as /3root 27, or /15root 32','/rprime a b':'Returns true if a and b are relatively prime',\
+               '/quadfunct a b c':'Quadratic function of ax^2 + bx + c',\
                }
     items = sorted(thedict.keys())
     go += ('%-20s%-30s' % ('Function', 'Use\n'))
@@ -273,8 +280,6 @@ def main(TI,answer, j):  #The Input, Initial Data, answer, eval or not
         else:
             if (TI + '(').index('(') < TI.index('loop'):
                 g = string(g, ID, answer)
-    if LIST == True:
-        return g
     origin = ''
     thein = str(g)
     thein = thein.split()
@@ -284,7 +289,6 @@ def main(TI,answer, j):  #The Input, Initial Data, answer, eval or not
             thein[n] = eval(i)
         except:
             pass
-        
     try:
         test = list(filter(lambda x: int(x) != x, thein))
     except:
@@ -309,6 +313,8 @@ def main(TI,answer, j):  #The Input, Initial Data, answer, eval or not
         elif origin == 'count':
             a = ListFunct(thein,justSTRING,2)
             return a.count(str(thein[1]))
+        elif origin == 'chr':
+            return chr(thein[1])
         elif origin == 'dem':
             c = demonstrate()
             return c
@@ -340,9 +346,12 @@ def main(TI,answer, j):  #The Input, Initial Data, answer, eval or not
             a = Help()
             return a
         elif origin == 'if':
+            if '/else' not in thein:
+                thein.append('/else')
             if thein[1]:
-                return ' '.join(IC('str',thein[2:]))
-            return ''
+                return ' '.join(IC('str',thein[2:thein.index("/else")]))
+            else:
+                return ' '.join(IC('str',thein[thein.index('/else')+1:]))
         elif origin == 'int':
             z = tuple(thein[1:])
             
@@ -419,8 +428,10 @@ def main(TI,answer, j):  #The Input, Initial Data, answer, eval or not
         elif origin == 'ngon':
             z = [str(j) for j in ngon(thein[1], thein[2])]
             return ' '.join(z)
+        elif origin == 'ord':
+            return ord(justSTRING[1])
         elif origin == 'pascr':
-            return ' '.join(IC('str',list(map(lambda x: int(choose(thein[1],x)) , range(thein[1] + 1)))))
+            return ' '.join(IC('str',list(map(lambda x: int(choose(thein[1],x)),range(thein[1] + 1)))))
         elif origin == 'perfect':
             return int(thein[1] == sum([int(i) for i in factors(thein[1]).split()[:-1]]))
         elif origin == 'perfrange':
@@ -428,7 +439,7 @@ def main(TI,answer, j):  #The Input, Initial Data, answer, eval or not
         elif origin == 'perm':
             return choose(thein[1],thein[2]) * factorial(thein[2])
         elif origin == 'permute':
-            return '\n'.join(distl(list([''.join(i) for i in itertools.permutations(str(thein[1]))])))
+            return '\n'.join(distl(list([''.join(i) for i in permutations(str(thein[1]))])))
         elif origin == 'pfactor':
             if thein[1] != 1:
                 return ' '.join([str(i) for i in pfactor(thein[1])])
@@ -442,6 +453,14 @@ def main(TI,answer, j):  #The Input, Initial Data, answer, eval or not
             return a
         elif origin == 'primerange':
             return primerange(thein[1], thein[2])
+        elif origin == 'quadratic':
+            a,b,c = tuple(thein[1:4])
+            if b**2 - (4*a*c) >= 0:
+                x = ((-1 *b) + sqrt(b**2 - 4*a*c))/(2*a)
+                y = ((-1 *b) - sqrt(b**2 - 4*a*c))/(2*a)
+                return str(x) + ' ' + str(y)
+            return 'Complex'
+            
         elif origin == 'prod':
             return reduce(mul, SplitS(thein[1:]), 1)
         elif origin == 'range':
@@ -456,12 +475,21 @@ def main(TI,answer, j):  #The Input, Initial Data, answer, eval or not
             return randint(thein[1],thein[2])
         elif origin == 'randrange':
             return eval('randrange' + str(tuple(thein[1:])))
+        elif 'root' in origin:
+            r = origin.split('root')
+            if len(r) == 2:
+                return thein[1] ** (1/(float(r[0])))
+            return thein[2] ** (1/thein[1])
         elif origin == 'right':
-            sides = list(map(lambda x: x**2, sorted([thein[1], thein[2], thein[3]])))
+            sides = [i**2 for i in sorted([thein[1], thein[2], thein[3]])]
             if sum(sides[:2]) == sides[2]:
                 return 1
-            else:
-                return 0
+            return 0
+    
+        elif origin == 'rprime':
+            if gcf(thein[1],thein[2]) == 1:
+                return True
+            return False
         elif origin == 'settings':
             changeit = Settings(thein[1:])
         elif origin == 'simpf':
@@ -474,7 +502,8 @@ def main(TI,answer, j):  #The Input, Initial Data, answer, eval or not
             return str(thein[1])
         elif origin == 'sum':
             a = ListFunct(thein, justSTRING, 1)
-            return fsum(a)
+            b = [int(i) for i in [sum(a)] if (int(i) - i == 0)]
+            return b[0]
         elif origin == 'trunc':
             return trunc(thein[1])
         elif origin == 'vars':
@@ -484,8 +513,8 @@ def main(TI,answer, j):  #The Input, Initial Data, answer, eval or not
         elif origin == 'sto':
             #print(thein)
             a = ListFunct(thein,justSTRING,2)
-            #ID[justSTRING[1]] = ' '.join(IC('str',a))#main(' '.join(IC('str',a)),answer,0)
-            ID[justSTRING[1]] = SplitS(thein[2:])
+            ID[justSTRING[1]] = ' '.join(IC('str',a))#main(' '.join(IC('str',a)),answer,0)
+            #ID[justSTRING[1]] = SplitS(thein[2:])
             print(ID)
             return 'done'
         else:
