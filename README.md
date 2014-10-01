@@ -1,7 +1,7 @@
 GoodPyCalc
 ==========
 
-The best calculator-programming languages, it has 60+ functions, and is more advanced, while being more efficient.
+The best calculator-programming language, it has 60+ functions, and is more advanced, while being more efficient.
 
 Functions
 ---------
