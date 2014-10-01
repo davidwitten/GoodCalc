@@ -1,7 +1,7 @@
 GoodPyCalc
 ==========
 
-A better version of my old calculator; it has many more functions, and is more advanced, while being more efficient.
+The best calculator-programming languages, it has 60+ functions, and is more advanced, while being more efficient.
 
 Functions
 ---------
@@ -23,4 +23,4 @@ Returns a range of prime numbers from x to y.
     
 Returns a loop through a list, acting as a for loop.
 
-Now, there are 50+ functions, so check it out!
+Now, there are 60+ functions, so check it out!
