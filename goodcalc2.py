@@ -51,84 +51,6 @@ def demonstrate():
     string += ('In addition it saves the loop as a list.\n')
     string += ('For more information on the topics, visit /help')
     return string
-
-def choose(x,y):
-    return int(factorial(x)/((factorial(x-y))*factorial(y)))
-    
-def evaluate(TI, ID, answer):
-    TI = str(TI)
-    TI = TI.split()
-    unwanted = '___z___z___'
-    if 'loop' in TI[0]: 
-        unwanted = TI[1]    
-    for i in TI:
-        if i in ID and i != unwanted:
-            TI[TI.index(i)] = TI[TI.index(i)].replace(i, "ID['" + i + "']")
-    return ' '.join(TI)
-
-
-def distl(array):
-    tup = []
-    for i in array:
-        if i not in tup:
-            tup.append(i)
-    return tup
-
-
-def string(x, ID, answer):
-    origin = x 
-    while x.count('(') + x.count(')') != 0:
-        Oi = 0
-        Ei = 0
-        for i, n in enumerate(x):
-            if n == '(':
-                Oi = i
-            elif n == ')':
-                Ei = i
-                break
-        newt = x[Oi: Ei + 1]
-        newt = evaluate(newt, ID, answer)
-        z = main(TO(newt), answer, 1)
-        if z == 'ERROR':
-            return main(origin, answer, 1)
-        x = x.replace(newt, str(z))
-    b = main(x, answer, 1)
-    if b != 'ERROR':
-        return x
-    return origin
-
-def rep(string,sub,changeto, orig=[]):
-    x = string.split()
-    for n,i in enumerate(x):
-        if i == sub:
-            x[n] = changeto
-        elif (sub in i) and (not(i.isalpha()) and not TO(i.replace('/','')) in orig):#not sure about last one, this is a kind of an iffy method
-            x[n] = x[n].replace(sub,changeto)
-            
-    return ' '.join(x)
-
-def factors(number):
-    factor = []
-    for i in range(1, int(sqrt(number)) + 1):
-        if number % i == 0:
-            factor.append(str(i))
-            factor.append(str(number//i))
-    factor = sorted([int(i) for i in factor])
-    return ' '.join(list(map(str,factor)))
-
-def gcf(a,b):
-    alist = [int(i) for i in distl(factors(a).split())]
-    large = 1
-    for i in alist:
-        if b%i == 0:
-            large = max(i,large)
-    return large
-
-def lcm(a,b):
-    for n in range(1, b + 1):
-        if (a * n)%b == 0:
-            return (a * n)
-
 def Help():
     go = ''
     global thedict
@@ -168,16 +90,93 @@ def Help():
                '/min a b c d e...':'Returns max of list','/gt a b':'Returns True if a > b, False otherwise','/ge a b':'Returns True if a >= b, False otherwise',\
                '/lt a b':'True if a < b','/le a b':'True if a <= b','/ne a b':'Returns True if a != b',\
                '/root x':'Returns the nth root of x as /3root 27, or /15root 32','/rprime a b':'Returns true if a and b are relatively prime',\
-               '/quadfunct a b c':'Quadratic function of ax^2 + bx + c',\
+               '/quadratic a b c':'Quadratic function of ax^2 + bx + c','/aprime a b c ...':"Returns true if every element of a list is prime",\
                }
     items = sorted(thedict.keys())
-    go += ('%-20s%-30s' % ('Function', 'Use\n'))
+    go += ('%-30s%-30s' % ('Function', 'Use\n'))
     for i in items:
         go += '\n' + ('%-30s%-30s' % (i, thedict.get(i)))
     go += '\n\n' + ('%-30s%-30s' % ('Functions:', str(len(thedict.keys()))))
     return go
 
 Help()
+
+def choose(x,y):
+    return int(factorial(x)/((factorial(x-y))*factorial(y)))
+    
+def evaluate(TI, ID, answer):
+    TI = str(TI)
+    TI = TI.split()
+    unwanted = '___z___z___'
+    if 'loop' in TI[0]: 
+        unwanted = TI[1]    
+    for i in TI:
+        if i in ID and i != unwanted:
+            TI[TI.index(i)] = TI[TI.index(i)].replace(i, "ID['" + i + "']")
+    return ' '.join(TI)
+
+
+def distl(array):
+    return list(set(array))
+
+def SplitS(string):
+    global thedict
+    
+    if len(string) == 1:
+        string = string[0]
+    try:
+        string = string.split()
+    except:
+        pass
+    try:
+        string = list(map(eval,string))
+    except:
+        pass
+    return string
+
+
+def string(x, ID, answer):
+    origin = x 
+    while x.count('(') + x.count(')') != 0:
+        Oi = 0
+        Ei = 0
+        for i, n in enumerate(x):
+            if n == '(':
+                Oi = i
+            elif n == ')':
+                Ei = i
+                break
+        newt = x[Oi: Ei + 1]
+        newt = evaluate(newt, ID, answer)
+        z = main(TO(newt), answer, 1)
+        if z == 'ERROR':
+            return main(origin, answer, 1)
+        x = x.replace(newt, str(z))
+    b = main(x, answer, 1)
+    if b != 'ERROR':
+        return x
+    return origin
+
+def rep(string,sub,changeto, orig=[]):
+    x = string.split()
+    for n,i in enumerate(x):
+        if i == sub:
+            x[n] = changeto
+        elif (sub in i) and (not(i.isalpha()) and not TO(i.replace('/','')) in orig):#not sure about last one, this is a kind of an iffy method
+            x[n] = x[n].replace(sub,changeto)
+            
+    return ' '.join(x)
+
+def factors(number):
+    factor = sorted(SplitS(' '.join([str(i) + ' '+ str(number//i) for i in range(1, int(sqrt(number)) + 1) if number%i==0])))
+    return ' '.join(list(map(str,factor)))
+
+def gcf(a,b):
+    return max(set(SplitS(factors(a))).intersection(set(SplitS(factors(b)))))
+
+def lcm(a,b):
+    return min([n for n in range(min(a,b),a*b+1,(min(a,b))) if n%max(a,b)==0])
+
 def ngon(x, y):
     for i in range(1, int(y) + 1):
         yield ((i ** 2) * (x - 2) - (i * (x - 4))) // 2
@@ -208,54 +207,12 @@ def Settings(MR):
     if mode == 'ch' or mode == 'change':
         pass
 def NintoX(n,x):
-    most = log(x,n)
-    z = 1
-    if int(most) == most:
-        return int(most)
-    for i in range(1,trunc(most) + 1):
-        if x%(n**i) == 0:
-            z += 1
-        else:
-            break
-    return z - 1
+    z = list(map(lambda j: n**j, range(1,int(log(x,n))+1)))
+    return int(log(max([i for i in z if x%i == 0]),n))
 def pfactor(n):
-    m = n
-    n = IC('int',factors(n).split()[1:])
-    n = list(filter(prime, n))
-    good = []
-    for i in n:
-        for j in range(NintoX(i,m)):
-            good.append(i)
-        m /= i**NintoX(i,m)
-    return good
-def pfactor2(n):
-    up = {}
-    m = [int(i) for i in factors(n).split()][1:]
-    for k in m:
-        if not prime(k):
-            z = list(filter(prime, [int(j) for j in factors(k).split()][1:]))
-            for i in z:
-                try:
-                    if z.count(i) > up[i]:
-                        up[i] = z.count(i)
-                except:
-                    up[i] = z.count(i)
-            
-    print(up)
-def SplitS(string):
-    global thedict
-    if len(string) == 1:
-        string = string[0]
-    try:
-        string = string.split()
-    except:
-        pass
-    try:
-        string = list(map(eval,string))
-    except:
-        pass
-    return string
-
+    n = ''.join([(str(i) + ' ')* NintoX(i,n) for i in SplitS(factors(n))[1:] if prime(i)])
+    return n
+    
 def ListFunct(thein, justSTRING,start,split = True):
     a = ' '.join([str(i) for i in thein[start:]])
     if justSTRING[start] == 'answer':
@@ -302,7 +259,10 @@ def main(TI,answer, j):  #The Input, Initial Data, answer, eval or not
     except:
         pass
     try:
-        if origin == 'choose':
+        if origin == 'aprime':
+            a = ListFunct(thein,justSTRING,1)
+            return (len(list(filter(prime, a))) == len(a))
+        elif origin == 'choose':
             return choose(thein[1],thein[2])
         elif origin == 'comment':
             return TI[9:]
@@ -414,13 +374,14 @@ def main(TI,answer, j):  #The Input, Initial Data, answer, eval or not
                     b = z.index(thein[1][-1])
                     z = rep(z,thein[1],str(i),origins.split())
                     z = string(z,ID,answer)
-                DList.append(str(main(z, answer, 0)))
+                answer = str(main(z, answer, 0))
+                DList.append(answer)
             DList = list(filter(lambda x: x!= '',DList))
             return '\n'.join(DList)
         elif origin in ['max','min']:
             a = ListFunct(thein, justSTRING,1)
             return eval(origin+'(a)')
-        elif origin == 'mean':
+        elif origin == 'mean' or origin == 'average':
             a = ListFunct(thein, justSTRING,1)
             return sum(a)/len(a)
         elif origin == 'not':
@@ -442,7 +403,7 @@ def main(TI,answer, j):  #The Input, Initial Data, answer, eval or not
             return '\n'.join(distl(list([''.join(i) for i in permutations(str(thein[1]))])))
         elif origin == 'pfactor':
             if thein[1] != 1:
-                return ' '.join([str(i) for i in pfactor(thein[1])])
+                return pfactor(thein[1])
             return '0'
         elif origin == 'print' or origin == 'p':
             pass
@@ -482,14 +443,9 @@ def main(TI,answer, j):  #The Input, Initial Data, answer, eval or not
             return thein[2] ** (1/thein[1])
         elif origin == 'right':
             sides = [i**2 for i in sorted([thein[1], thein[2], thein[3]])]
-            if sum(sides[:2]) == sides[2]:
-                return 1
-            return 0
-    
+            return int(sum(sides[:2]) == sides[2])
         elif origin == 'rprime':
-            if gcf(thein[1],thein[2]) == 1:
-                return True
-            return False
+            return (gcf(thein[1],thein[2]) == 1)
         elif origin == 'settings':
             changeit = Settings(thein[1:])
         elif origin == 'simpf':
