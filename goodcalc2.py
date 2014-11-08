@@ -91,6 +91,7 @@ def Help():
                '/lt a b':'True if a < b','/le a b':'True if a <= b','/ne a b':'Returns True if a != b',\
                '/root x':'Returns the nth root of x as /3root 27, or /15root 32','/rprime a b':'Returns true if a and b are relatively prime',\
                '/quadratic a b c':'Quadratic function of ax^2 + bx + c','/aprime a b c ...':"Returns true if every element of a list is prime",\
+               '/fromdec decimal tobase':"Converts number from decimal to specified",\
                }
     items = sorted(thedict.keys())
     go += ('%-30s%-30s' % ('Function', 'Use\n'))
@@ -134,7 +135,13 @@ def SplitS(string):
         pass
     return string
 
-
+def FromDecimal(n,tobase):
+    a = ''
+    x = int(log(n,tobase))
+    for i in range(x,-1,-1):
+        a += str(int(n/(tobase**i)))
+        n -= tobase**i * int(a[-1])
+    return a
 def string(x, ID, answer):
     origin = x 
     while x.count('(') + x.count(')') != 0:
@@ -293,6 +300,8 @@ def main(TI,answer, j):  #The Input, Initial Data, answer, eval or not
             return factorial(thein[1])
         elif origin == 'frac':
             return ' '.join(str(Fraction(str(thein[1]))).split('/'))
+        elif origin == 'fromdec':
+            return FromDecimal(thein[1],thein[2])
         elif origin in ['ge','gt','le','lt','ne','eq']:
             return eval(str(thein[0][1:]) + str((thein[1],thein[2])))
         elif origin == 'sqrt':
