@@ -1,4 +1,4 @@
-GoodPyCalc
+GoodCalc
 ==========
 
 The best calculator-programming language, it has 60+ functions, and is more advanced, while being more efficient.
