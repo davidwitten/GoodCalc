@@ -27,8 +27,7 @@ def demonstrate():
     string = ''
     string += ("This is a demonstration of the implementation of the '/choose' function\n")
     string += (z + '(/choose 3 2) ** 2\n')
-    string += ('Answer:\n')
-    string += ('9\n')
+    string += ('Answer:\n9\n')
     string += ('\nIt is recommended that you use parentheses to alleviate confusion over order of operations.\n')
     string += ("\nHere is a demonstration of a more complex function: The '/loop' function\n\n")
     string += (z + '/loop i 1 10 1 {/choose 10 i\n')
@@ -230,6 +229,7 @@ def ListFunct(thein, justSTRING,start,split = True):
 def main(TI,answer, j):  #The Input, Initial Data, answer, eval or not
     global thedict
     global ID
+    ID['answer'] = answer
     origins = ' '.join([i.split()[0][1:] for i in thedict.keys()])
     #equal = partial(lambda x,y: x == y)
     notbad = 0
@@ -340,7 +340,7 @@ def main(TI,answer, j):  #The Input, Initial Data, answer, eval or not
             return lcm(thein[1],thein[2])
         elif origin == 'len':
             a = ListFunct(thein,justSTRING,1)
-            if len(a) == 1:
+            if len(a) == 1 and not(a.isnum()):
                 return len(str(thein[1]))
             return len(a)
         elif origin == 'ln':
@@ -484,15 +484,16 @@ def main(TI,answer, j):  #The Input, Initial Data, answer, eval or not
             return 'done'
         else:
             try:
-                return eval(g)
-            except FileExistsError:# Exception as e:
-                return e
-    except FileNotFoundError: #Exception as e:
+                return eval(g,ID)
+            except Exception as e:
+                return e 
+    except Exception as e:
         return e
 
 
 answer = 0
 done = False
+
 while done == False:
     TheBeginning = input(">>> ")
     answer = main(TheBeginning, answer, 0)
@@ -500,5 +501,3 @@ while done == False:
         answer = 'Finished'
         done = True
     print(answer)
-
-
